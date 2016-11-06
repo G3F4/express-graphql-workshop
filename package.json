@@ -1,0 +1,30 @@
+{
+  "name": "express-graphql-workshop",
+  "version": "1.0.0",
+  "description": "Creating Express GraphQL server in Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/G3F4/express-graphql-workshop.git"
+  },
+  "keywords": [
+    "graphql",
+    "express",
+    "node",
+    "server"
+  ],
+  "author": "G3F4",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/G3F4/express-graphql-workshop/issues"
+  },
+  "homepage": "https://github.com/G3F4/express-graphql-workshop#readme",
+  "dependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babel-register": "^6.18.0"
+  },
+  "devDependencies": {}
+}
