@@ -33,7 +33,7 @@ You can clone repo and checkout to commit with particular step
 
         $ npm init
 
-3. Install babel-register and es2015 presets with npm saving dependencies(to use es2015+ features).
+3. Install `babel-register` and `babel-preset-es2015` with npm saving dependencies(to use es2015+ features).
 
         $ npm i babel-register --save
         $ npm i babel-preset-es2015 --save
@@ -42,10 +42,50 @@ You can clone repo and checkout to commit with particular step
 
         $ touch index.js
 
-5. and within use require to import babel-register(creates hook):
+5. and within use require to import `babel-register`(creates hook):
 
         require('babel-register')({
           "presets": ["es2015"]
         });
 
-[commit](https://github.com/G3F4/express-graphql-workshop/commit/af2103200782680916c2b94598a5cd77d08a167a)
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/a0d1ca893d0447c6f5214c1d9d7940633c9034d5)
+
+## Create express server
+
+1. Install `express` with npm and save flag and create `server.js` file ...
+
+        $ npm i express --save
+        $ touch server.js
+
+2. ... and within:
+    * import `express`
+    
+        ```js
+        import express from 'express';
+        ```
+
+    * define port number
+    
+        ```js
+        const PORT = 30001;
+        ```
+
+    * create `express` application and start to listening
+        ```js
+        express()
+          .listen(PORT, () => console.log(`Server listening on localhost:${PORT}`));
+        ```
+
+3. In `index.js` require `server.js`:
+
+        require('./server.js');
+
+5. Add script starting server to `package.json`.
+
+        "dev": "node index.js"
+
+6. Start server.
+
+        $ npm run dev
+
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/e717e162dc3c1df9a66a6d8130e05a8493e36865)
