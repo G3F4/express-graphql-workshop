@@ -145,4 +145,54 @@ You can clone repo and checkout to commit with particular step
     
 5. Open browser on localhost:30001 and query for test field!
 
-[commit](https://github.com/G3F4/express-graphql-workshop/commit/b9f71f2aab6f79dfb73f8df7366d494b175bcf43)
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/3d1e64a71ecdbda9844c583a621a1c658f7d8cbe)
+
+## Adding query to schema
+
+1. Create `query.js` file in `graphql` folder.
+    ```bash
+	cd graphql
+	touch query.js
+	```
+
+2. In `query.js`:
+    * import necessary
+    ```javascript
+    import { GraphQLObjectType, GraphQLString } from 'graphql';
+    ```
+
+    * create `schema` with two fields: `participant` and `event` of string type resolving static string for now.
+    ```javascript
+    const query = new GraphQLObjectType({
+      name: 'Query',
+      fields: {
+        participant: {
+          resolve: () => 'participant',
+          type: GraphQLString,
+        },
+        event: {
+          resolve: () => 'event',
+          type: GraphQLString,
+        }
+      }
+    });
+    ```
+
+    * export `query`
+    ```javascript
+    export default query;
+    ```
+
+3. In `schema.js`:
+    * reduce imports from `graphql` and import `query`
+    ```javascript
+    import { GraphQLSchema } from 'graphql';
+    import query from './query';
+    ```
+
+    * change `schema` definition to use imported `query`
+    ```javascript
+    const schema = new GraphQLSchema({ query });
+    ```
+
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/633c83fdc7330954474b5a11e5ba239940ced32b)
