@@ -301,3 +301,66 @@ You can clone repo and checkout to commit with particular step
     ```
 
 [commit](https://github.com/G3F4/express-graphql-workshop/commit/a5a459c7bdf8a78cc5cb4294e198cd9b0d2a0d27)
+
+## Understanding fields resolve method (root and arguments)
+
+1. In `query.js`:
+    * import neseccary types from `graphql`
+    ```javascript
+    import { GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString } from 'graphql';
+    ```
+    * add arguments to fields(the same for both `participant` and `event`)
+    ```javascript
+    args: {
+      id: { type: new GraphQLNonNull(GraphQLID) },
+      name: { type: GraphQLString }
+    }
+    ```
+
+    * add `root` and `args` arguments to resolve methods and return `args`
+    ```javascript
+    resolve: (root, args) => args,
+    ```
+
+2. Next in `EventType.js`:
+    * add "root" and "args" arguments to resolve methods
+    * the "root" argument has value returned from parent in schema
+     in this case the "event" field which is returning it's args
+     for scalar(primitive) fields return corresponding value from root
+     for list return table with root value
+    ```javascript
+    id: {
+      type: GraphQLID,
+      resolve: (root) => root.id
+    },
+    name: {
+      type: GraphQLString,
+      resolve: (root) => root.name
+    },
+    participants: {
+      type: new GraphQLList(ParticipantType),
+      resolve: (root) => [root]
+    }
+    ```
+
+3. Do the same thing for `ParticipantType`.
+    ```javascript
+    id: {
+      type: GraphQLID,
+      resolve: (root) => root.id
+    },
+    name: {
+      type: GraphQLString,
+      resolve: (root) => root.name
+    },
+    friends: {
+      type: new GraphQLList(ParticipantType),
+      resolve: (root) => [root]
+    },
+    events: {
+      type: new GraphQLList(EventType),
+      resolve: (root) => [root]
+    }
+    ```
+
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/2ba8049bab3ccf553ebe5f62ee8cece16c5191cc)

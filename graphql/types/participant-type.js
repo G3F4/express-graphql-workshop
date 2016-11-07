@@ -6,19 +6,19 @@ const ParticipantType = new GraphQLObjectType({
   fields: () => ({
     id: {
       type: GraphQLID,
-      resolve: () => 'id'
+      resolve: (root) => root.id
     },
     name: {
       type: GraphQLString,
-      resolve: () => 'name'
+      resolve: (root) => root.name
     },
     friends: {
       type: new GraphQLList(ParticipantType),
-      resolve: () => ['']
+      resolve: (root) => [root]
     },
     events: {
       type: new GraphQLList(EventType),
-      resolve: () => ['']
+      resolve: (root) => [root]
     }
   })
 });
