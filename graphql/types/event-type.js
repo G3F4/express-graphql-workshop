@@ -1,5 +1,6 @@
 import { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList } from 'graphql';
 import ParticipantType from './participant-type';
+import { getParticipant } from '../../fake-api';
 
 const EventType = new GraphQLObjectType({
   name: 'event',
@@ -14,7 +15,7 @@ const EventType = new GraphQLObjectType({
     },
     participants: {
       type: new GraphQLList(ParticipantType),
-      resolve: (root) => [root]
+      resolve: (root) => root.participantsIds.map((id) => getParticipant(id))
     }
   })
 });

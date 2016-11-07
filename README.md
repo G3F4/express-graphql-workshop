@@ -363,4 +363,130 @@ You can clone repo and checkout to commit with particular step
     }
     ```
 
-[commit](https://github.com/G3F4/express-graphql-workshop/commit/2ba8049bab3ccf553ebe5f62ee8cece16c5191cc)
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/e5428e38c01f9418eef47cfc21b3c60fae320ee9)
+
+## Adding fakeApi to serve dummy data
+
+1. Create new file in root directory `fake-api.js`.
+    ```bash
+    touch fake-api.js
+    ```
+
+2. We need two lists: one for events and one for participants.
+    * event item in events list should be structured like below:
+    ```javascript
+    {
+      id: String // event id
+      name: String // event name
+      participantsIds: List(String) // list of participants ids
+    }
+    ```
+
+    * participant item in participants list should be structured like below:
+    ```javascript
+    {
+      id: String // event id
+      name: String // event name
+      eventsIds: List(String) // list of events ids
+      friendsIds: List(String) // list of friends ids
+    }
+    ```
+
+3. Inside `fake-api.js`:
+    * declaring dummy data
+    ```javascript
+    const DATA = {
+      participants: [{
+        id: '1',
+        name: 'Bolek',
+        friendsIds: ['2', '3'],
+        eventsIds: ['1']
+      }, {
+        id: '2',
+        name: 'Franek',
+        friendsIds: ['1'],
+        eventsIds: ['1']
+      }, {
+        id: '3',
+        name: 'Zenek',
+        friendsIds: [],
+        eventsIds: ['1', '2']
+      }],
+      events: [{
+        id: '1',
+        name: 'WarsawJS',
+        participantsIds: ['1', '2', '3']
+      }, {
+        id: '2',
+        name: 'ReactWarsaw',
+        participantsIds: ['2']
+      }, {
+        id: '3',
+        name: 'AngularWarsaw',
+        participantsIds: []
+      }]
+    };
+    ```
+
+    * declare functions returning proper `event` and `participant` by `id`
+    ```javascript
+    const getEvent = (id) => DATA.events.find(participant => participant.id === id);
+    const getParticipant = (id) => DATA.participants.find(event => event.id === id);
+    ```
+
+    * export functions
+    ```javascript
+    export {
+      getEvent,
+      getParticipant
+    }
+    ```
+
+4. Use `fake-api` in `query.js`:
+    * import `fake-api` functions
+    ```javascript
+    import { getEvent, getParticipant } from '../fake-api';
+    ```
+
+    * use them to resolve value for `event` and `participant` fields, passing `id` from `args` argument
+    ```javascript
+    participant: {
+      ...
+      resolve: (root, args) => getParticipant(args.id),
+      ...
+    },
+    event: {
+      ...
+      resolve: (root, args) => getEvent(args.id),
+      ...
+    }
+    ```
+
+5. In `event-type.js`:
+    * import getParticipant
+    ```javascript
+    import { getParticipant } from '../../fake-api';
+    ```
+
+    * in `participants` field resolve method use `getParticipant` while mapping through `participantIds` from root value
+    ```javascript
+    resolve: (root) => root.participantsIds.map((id) => getParticipant(id))
+    ```
+
+5. In `participant-type.js`:
+    * import `getParticipant` and `getEvent`
+    ```javascript
+    import { getParticipant, getEvent } from '../../fake-api';
+    ```
+
+    * in `event` field resolve method use `getEvent` while mapping through `eventIds` from root value
+    ```javascript
+    resolve: (root) => root.eventsIds.map(id => getEvent(id))
+    ```
+
+    * in `friends` field resolve method use `getParticipant` while mapping through `friendsIds` from root value
+    ```javascript
+    resolve: (root) => root.friendsIds.map(id => getParticipant(id))
+    ```
+
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/c38876b777e1322663498dffdfa4c244c8c7b992)
