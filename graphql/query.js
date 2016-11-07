@@ -1,15 +1,17 @@
-import { GraphQLObjectType, GraphQLString } from 'graphql';
+import { GraphQLObjectType } from 'graphql';
+import EventType from './types/event-type';
+import ParticipantType from './types/participant-type';
 
 const query = new GraphQLObjectType({
   name: 'Query',
   fields: {
     participant: {
       resolve: () => 'participant',
-      type: GraphQLString
+      type: ParticipantType
     },
     event: {
       resolve: () => 'event',
-      type: GraphQLString
+      type: EventType
     }
   }
 });

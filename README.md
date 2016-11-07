@@ -94,13 +94,13 @@ You can clone repo and checkout to commit with particular step
 
 1. Using npm install `graphql` and `express-graphql`([Lee Byron](https://github.com/leebyron) Express app [setup for graphql server](https://github.com/graphql/graphql-js)).
     ```bash
-	npm i graphql express-graphql --save
+	$ npm i graphql express-graphql --save
 	```
 
 2. Create `graphql` folder and `schema.js` file in it.
     ```bash
-	mkdir graphql && cd graphql
-	touch schema.js
+	$ mkdir graphql && cd graphql
+	$ touch schema.js
 	```
 
 3. In `schema.js`:
@@ -151,8 +151,8 @@ You can clone repo and checkout to commit with particular step
 
 1. Create `query.js` file in `graphql` folder.
     ```bash
-	cd graphql
-	touch query.js
+	$ cd graphql
+	$ touch query.js
 	```
 
 2. In `query.js`:
@@ -196,3 +196,108 @@ You can clone repo and checkout to commit with particular step
     ```
 
 [commit](https://github.com/G3F4/express-graphql-workshop/commit/633c83fdc7330954474b5a11e5ba239940ced32b)
+
+## Adding types to schema
+
+1. Create `types` subfolder in `graphql` folder. Then create `event-type.js` and `participant-type.js` files in it.
+    ```bash
+	$ cd graphql
+	$ mkdir types && cd touch
+	$ touch event-type.js participant-type.js
+	```
+
+2. In `event-type.js"`
+    * import necessary `GraphQL` types and `ParticipantType`(we will use it to resolve event participants)
+    ```javascript
+    import { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList } from 'graphql';
+    import ParticipantType from './participant-type';
+    ```
+
+    * create new type with 3 fields:
+        * `id` of ID type, resolving static literal for now
+        * `name` of string type, resolving static literal for now
+        * `participants` type of list of `ParticipantType`, resolving array with empty string for now
+    ```javascript
+    const EventType = new GraphQLObjectType({
+      name: 'event',
+      fields: () => ({
+        id: {
+          type: GraphQLID,
+          resolve: () => 'id'
+        },
+        name: {
+          type: GraphQLString,
+          resolve: () => 'name'
+        },
+        participants: {
+          type: new GraphQLList(ParticipantType),
+          resolve: () => ['']
+        }
+      })
+    });
+    ```
+
+    * export `EventType`
+    ```javascript
+    export default EventType;
+    ```
+
+3. Do the same for `ParticipantType` with fields(import `EventType` instead of `ParticipantType`):
+    * `id` of ID type, resolving static literal for now
+    * `name` of string type, resolving static literal for now
+    * `friends` type of list of `ParticipantType`, resolving array with empty string for now
+    * `events` type of list of `EventType`, resolving array with empty string for now
+    ```javascript
+    import { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList } from 'graphql';
+    import EventType from './EventType';
+
+    const ParticipantType = new GraphQLObjectType({
+      name: 'participant',
+      fields: () => ({
+        id: {
+          type: GraphQLID,
+          resolve: () => 'id'
+        },
+        name: {
+          type: GraphQLString,
+          resolve: () => 'name'
+        },
+        friends: {
+          type: new GraphQLList(ParticipantType),
+          resolve: () => ['']
+        },
+        events: {
+          type: new GraphQLList(EventType),
+          resolve: () => ['']
+        }
+      })
+    });
+
+    export default `ParticipantType`;
+    ```
+
+4. In `query.js`:
+    * import created types
+    ```javascript
+    import EventType from './types/EventType';
+    import ParticipantType from './types/ParticipantType';
+    ```
+
+    * use them in `query` as fields types
+    ```javascript
+    const query = new GraphQLObjectType({
+      name: 'Query',
+      fields: {
+        participant: {
+          resolve: () => 'participant',
+          type: ParticipantType,
+        },
+        event: {
+          resolve: () => 'event',
+          type: EventType,
+        }
+      }
+    });
+    ```
+
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/a5a459c7bdf8a78cc5cb4294e198cd9b0d2a0d27)
