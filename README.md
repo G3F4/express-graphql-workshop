@@ -369,7 +369,7 @@ You can clone repo and checkout to commit with particular step
 
 1. Create new file in root directory `fake-api.js`.
     ```bash
-    touch fake-api.js
+    $ touch fake-api.js
     ```
 
 2. We need two lists: one for events and one for participants.
@@ -490,3 +490,113 @@ You can clone repo and checkout to commit with particular step
     ```
 
 [commit](https://github.com/G3F4/express-graphql-workshop/commit/c38876b777e1322663498dffdfa4c244c8c7b992)
+
+## Adding mutations
+
+1. Add new functions to `fake-api.js` and update export
+    ```javascript
+    const addEvent = ({ id, name }) => {
+      DATA.events.push({ id, name, participantsIds: [] });
+    
+      return getEvent(id);
+    };
+    const addParticipant = ({ id, name }) => {
+      DATA.participants.push({ id, name, eventsIds: [], friendsIds: [] });
+    
+      return getParticipant(id);
+    };
+    const addParticipantToEvent = ({ participantId, eventId }) => {
+      const participant = getParticipant(participantId);
+      participant.eventsIds.push(eventId);
+      getEvent(eventId).participantsIds.push(participantId);
+    
+      return participant;
+    };
+    const addParticipantFriend = ({ participantId, friendId }) => {
+      const participant = getParticipant(participantId);
+      participant.friendsIds.push(friendId);
+      getParticipant(friendId).friendsIds.push(participantId);
+    
+      return participant;
+    };
+    
+    export {
+      addEvent,
+      addParticipant,
+      addParticipantToEvent,
+      addParticipantFriend,
+      getEvent,
+      getParticipant
+    }
+    ```
+
+2. Create `mutation.js` file in `graphql` folder.
+    ```bash
+    $ cd graphql
+    $ touch mutation.js
+    ```
+
+3. Inside:
+    * import necessary `graphql` types, functions from `fake-api`, `EventType` and `ParticipantType`
+    ```javascript
+    import { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLNonNull } from 'graphql';
+    import { addEvent, addParticipant, addParticipantToEvent, addParticipantFriend } from '../fakeApi';
+    import EventType from './types/EventType';
+    import ParticipantType from './types/ParticipantType';
+    ```
+
+    * declaring `mutation` is similar to declaring `query`. Mutation have fields with types
+    after mutating data, GrapqhQL will return mutated data, that's why mutation fields
+    have similar types to query fields
+    we will add 4 mutations: `addEvent`, `addParticipant`, `addParticipantToEvent`, `addParticipantFriend`
+    ```javascript
+    const mutation = new GraphQLObjectType({
+      name: 'Mutation',
+      description: 'Mutate data',
+      fields: {
+        addEvent: {
+          type: EventType,
+          args: {
+            id: { type: new GraphQLNonNull(GraphQLID) },
+            name: { type: new GraphQLNonNull(GraphQLString) }
+          },
+          resolve: (root, { id, name }) => addEvent({ id, name })
+        },
+        addParticipant: {
+          type: ParticipantType,
+          args: {
+            id: { type: new GraphQLNonNull(GraphQLID) },
+            name: { type: new GraphQLNonNull(GraphQLString) }
+          },
+          resolve: (root, { id, name }) => addParticipant({ id, name })
+        },
+        addParticipantToEvent: {
+          type: ParticipantType,
+          args: {
+            participantId: { type: new GraphQLNonNull(GraphQLID) },
+            eventId: { type: new GraphQLNonNull(GraphQLID) }
+          },
+          resolve: (root, { participantId, eventId }) => addParticipantToEvent({ participantId, eventId })
+        },
+        addParticipantFriend: {
+          type: ParticipantType,
+          args: {
+            participantId: { type: new GraphQLNonNull(GraphQLID) },
+            friendId: { type: new GraphQLNonNull(GraphQLID) }
+          },
+          resolve: (root, { participantId, friendId }) => addParticipantFriend({ participantId, friendId })
+        }
+      }
+    });
+    
+    export default mutation;
+    ```
+
+4. Import and use mutation in `schema.js`.
+    ```javascript
+    import mutation from './mutation';
+
+    const schema = new GraphQLSchema({ query, mutation });
+    ```
+
+[commit](https://github.com/G3F4/express-graphql-workshop/commit/402946ab9844a109ad372a19465f2a0fff7c7871)
